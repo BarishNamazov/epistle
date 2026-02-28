@@ -10,11 +10,14 @@ import {
   PBKDF2_ITERATIONS,
   SALT_LEN,
   TS_LEN,
+} from "./constants.js";
+import {
+  decodePayload,
+  encodePayload,
   encodeText,
   packByte,
   unpackByte,
-} from "./constants.js";
-import { decodePayload, encodePayload } from "./encoding.js";
+} from "./encoding.js";
 
 /**
  * Derive an AES-256 key and 96-bit GCM IV from a passphrase and salt via PBKDF2.
@@ -149,20 +152,4 @@ export async function decrypt(packed, passphrase) {
   const text = await decompressToText(new Uint8Array(decrypted), compAlgo);
 
   return { text, ts };
-}
-
-/**
- * Format a timestamp (ms since epoch) into a human-readable "Sealed on …" string.
- * @param {number | null} ts - Milliseconds since epoch, or null.
- * @returns {string}
- */
-export function formatSealedOn(ts) {
-  if (!ts) return "";
-  const date = new Date(ts);
-  return `Sealed on ${date.toLocaleDateString("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  })}`;
 }

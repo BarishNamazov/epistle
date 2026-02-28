@@ -1,4 +1,4 @@
-import { decrypt, encrypt, formatSealedOn } from "./crypto.js";
+import { decrypt, encrypt } from "./crypto.js";
 import {
   applySavedFullscreenTextareaSize,
   bindDraftAutosave,
@@ -8,6 +8,22 @@ import {
 } from "./storage.js";
 
 export { clearLetterDraft };
+
+/**
+ * Format a timestamp (ms since epoch) into a human-readable "Sealed on …" string.
+ * @param {number | null} ts - Milliseconds since epoch, or null.
+ * @returns {string}
+ */
+function formatSealedOn(ts) {
+  if (!ts) return "";
+  const date = new Date(ts);
+  return `Sealed on ${date.toLocaleDateString("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  })}`;
+}
 
 /**
  * Toggle the fullscreen writing mode.

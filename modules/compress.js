@@ -1,4 +1,4 @@
-import { decodeText, encodeText } from "./constants.js";
+import { decodeText, encodeText } from "./encoding.js";
 
 let _brotli = null;
 

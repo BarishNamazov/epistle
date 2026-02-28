@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { decrypt, encrypt, formatSealedOn } from "../modules/crypto.js";
+import { decrypt, encrypt } from "../modules/crypto.js";
 
 describe("encrypt / decrypt roundtrip", () => {
   test("roundtrips with Base85 encoding", async () => {
@@ -59,20 +59,3 @@ describe("encrypt / decrypt roundtrip", () => {
   });
 });
 
-describe("formatSealedOn", () => {
-  test("returns empty string for null", () => {
-    expect(formatSealedOn(null)).toBe("");
-  });
-
-  test("returns empty string for 0", () => {
-    expect(formatSealedOn(0)).toBe("");
-  });
-
-  test("formats a valid timestamp", () => {
-    const ts = new Date("2024-06-15").getTime();
-    const result = formatSealedOn(ts);
-    expect(result).toContain("Sealed on");
-    expect(result).toContain("2024");
-    expect(result).toContain("June");
-  });
-});
