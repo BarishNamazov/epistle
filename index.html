@@ -1,0 +1,161 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="color-scheme" content="light dark" />
+  <title>Epistle</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;0,700;1,300;1,400;1,500&family=Lora:ital,wght@0,400;0,500;0,600;1,400;1,500&family=JetBrains+Mono:wght@300;400&display=swap"
+    rel="stylesheet"
+  />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <noscript>
+    <div style="max-width: 760px; margin: 2rem auto; padding: 1rem; border: 1px solid #ccc;">
+      This page requires JavaScript to seal/unseal letters.
+    </div>
+  </noscript>
+
+  <div class="container">
+
+    <!-- Brand header -->
+    <div class="brand">
+      <div class="brand-icon" aria-hidden="true">
+        <svg viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="6" y="14" width="36" height="22" rx="2.5" stroke="currentColor" stroke-width="1.4" opacity="0.75"/>
+          <path d="M7.5 16L24 28L40.5 16" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round" opacity="0.75"/>
+        </svg>
+      </div>
+      <h1>Epistle</h1>
+    </div>
+
+    <!-- ═══ COMPOSE VIEW ═══ -->
+    <div id="compose-view" class="paper">
+      <div class="compose-header">
+        <h2>Compose a Letter</h2>
+        <p>Your words, sealed and encrypted — only the password can reveal them.</p>
+      </div>
+
+      <div id="letter-field" class="field">
+        <div class="field-head">
+          <label for="letter-content">Your Letter</label>
+          <button
+            id="focus-write-btn"
+            class="btn btn-secondary btn-mini"
+            type="button"
+            onclick="toggleWriteFocus()"
+            aria-pressed="false"
+          >
+            Fullscreen
+          </button>
+        </div>
+        <textarea id="letter-content" placeholder="Dear friend, I wanted to tell you something..."></textarea>
+      </div>
+
+      <div id="passphrase-field" class="field">
+        <label for="compose-password">Passphrase</label>
+        <!-- Use password type so it behaves correctly and doesn't leak on-screen -->
+        <input
+          type="text"
+          id="compose-password"
+          placeholder="A shared secret between you two"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <p class="hint">Choose something meaningful that only you and the recipient would know.</p>
+      </div>
+
+      <label class="option-toggle">
+        <input type="checkbox" id="shorter-link" />
+        <div class="check" aria-hidden="true">
+          <svg viewBox="0 0 12 12"><polyline points="2.5 6 5 9 9.5 3"></polyline></svg>
+        </div>
+        <span>Get a shorter link, but it will look mysterious</span>
+      </label>
+
+      <div class="actions">
+        <button class="btn btn-primary" type="button" onclick="sealLetter()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          Seal &amp; Encrypt
+        </button>
+        <button class="btn btn-secondary" type="button" onclick="clearLetterDraft()">
+          Clear Draft
+        </button>
+      </div>
+
+      <div id="url-output" class="url-output" aria-live="polite">
+        <h3>&#10003; Letter Sealed Successfully</h3>
+        <div id="url-display" class="url-display"></div>
+        <div style="display:flex; gap:0.8rem; flex-wrap:wrap; align-items: center;">
+          <button class="btn btn-gold" type="button" onclick="copyURL()" style="padding:0.6rem 1.4rem; font-size:0.85rem;">
+            Copy Link
+          </button>
+          <button class="btn btn-secondary" type="button" onclick="previewLetter()" style="padding:0.6rem 1.4rem; font-size:0.85rem;">
+            Preview
+          </button>
+          <span id="copy-feedback" class="copy-feedback">Copied to clipboard!</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ UNLOCK VIEW ═══ -->
+    <div id="unlock-view" class="paper hidden">
+      <div class="unlock-view">
+        <div class="seal">
+          <div class="seal-circle" aria-hidden="true">
+            <svg viewBox="0 0 24 24">
+              <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+            </svg>
+          </div>
+        </div>
+        <h2>A Letter Awaits You</h2>
+        <p class="subtitle">Enter the passphrase to break the seal.</p>
+        <div class="unlock-field">
+          <input type="text" id="unlock-password" placeholder="Passphrase" autocomplete="off" />
+        </div>
+        <button class="btn btn-primary" type="button" onclick="unsealLetter()" id="unseal-btn">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+            <rect x="3" y="11" width="18" height="11" rx="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 5-5 5 5 0 0 1 5 5"></path>
+          </svg>
+          Unseal
+        </button>
+        <div id="error-msg" class="error-msg" role="alert">
+          The passphrase doesn't seem right. Please try again.
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ LETTER VIEW ═══ -->
+    <div id="letter-view" class="paper hidden">
+      <div class="letter-view visible">
+        <div class="letter-ornament" aria-hidden="true">✦ ✦ ✦</div>
+        <div id="letter-body" class="letter-body"></div>
+        <div class="letter-footer">
+          <div class="ornament-end" aria-hidden="true">— ◇ —</div>
+          <div id="letter-timestamp" class="timestamp"></div>
+          <a class="reply-link" href="/">Want to write a letter back?</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="site-footer">
+      <p>Secure & Encrypted · Nothing stored on any server · Your words, safe in a link</p>
+    </div>
+
+  </div>
+
+  <script type="module" src="modules/main.js"></script>
+</body>
+</html>

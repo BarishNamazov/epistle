@@ -1,0 +1,19 @@
+{
+  "name": "epistle",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "bun run scripts/build.js",
+    "dev": "bun run scripts/dev.js",
+    "check": "bunx @biomejs/biome check --write ./modules ./scripts ./tests",
+    "test": "bun test"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^1.9.4"
+  },
+  "dependencies": {
+    "base2048": "^3.0.0",
+    "brotli-wasm": "^3.0.1"
+  }
+}
