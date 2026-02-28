@@ -55,7 +55,7 @@ export async function sealLetter() {
     const url = `${window.location.origin + window.location.pathname}#${encryptedHash}`;
 
     document.getElementById("url-display").innerText = url;
-    document.getElementById("url-output").style.display = "block";
+    document.getElementById("url-output").classList.add("visible");
   } catch (err) {
     console.error("Encryption failed:", err);
     alert("An error occurred while sealing the letter.");
@@ -83,8 +83,7 @@ export async function copyURL() {
 /** Navigate to the sealed URL to preview the unlock flow. */
 export function previewLetter() {
   const url = document.getElementById("url-display").innerText;
-  window.location.href = url;
-  window.location.reload();
+  window.open(url, "_blank");
 }
 
 /** Decrypt the URL hash and show the letter content. */
