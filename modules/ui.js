@@ -59,6 +59,7 @@ export function toggleWriteFocus(forceState) {
 export async function sealLetter() {
   const content = document.getElementById("letter-content").value;
   const password = document.getElementById("compose-password").value;
+  const passphrase = password.toLowerCase();
 
   if (!content || !password) {
     alert("Please provide both your letter and a passphrase.");
@@ -67,7 +68,7 @@ export async function sealLetter() {
 
   try {
     const useBase2048 = document.getElementById("shorter-link").checked;
-    const encryptedHash = await encrypt(content, password, { useBase2048 });
+    const encryptedHash = await encrypt(content, passphrase, { useBase2048 });
     const url = `${window.location.origin + window.location.pathname}#${encryptedHash}`;
 
     document.getElementById("url-display").innerText = url;
@@ -105,6 +106,7 @@ export function previewLetter() {
 /** Decrypt the URL hash and show the letter content. */
 export async function unsealLetter() {
   const password = document.getElementById("unlock-password").value;
+  const passphrase = password.toLowerCase();
   const hash = decodeURIComponent(window.location.hash.substring(1));
   const errorMsg = document.getElementById("error-msg");
 
@@ -117,7 +119,7 @@ export async function unsealLetter() {
   }
 
   try {
-    const { text, ts } = await decrypt(hash, password);
+    const { text, ts } = await decrypt(hash, passphrase);
 
     document.getElementById("unlock-view").classList.add("hidden");
     document.getElementById("letter-view").classList.remove("hidden");
