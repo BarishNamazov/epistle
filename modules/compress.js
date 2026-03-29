@@ -5,8 +5,12 @@ let _brotli = null;
 /** @returns {Promise<typeof import("brotli-wasm")>} Lazily loaded brotli-wasm instance. */
 async function getBrotli() {
   if (!_brotli) {
-    const mod = await import("brotli-wasm");
-    _brotli = await mod.default;
+    try {
+      const mod = await import("brotli-wasm");
+      _brotli = await mod.default;
+    } catch (e) {
+      throw new Error("WASM_LOAD_FAILED");
+    }
   }
   return _brotli;
 }

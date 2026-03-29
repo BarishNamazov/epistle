@@ -122,7 +122,20 @@ export async function unsealLetter() {
     const { text, ts } = await decrypt(hash, passphrase);
 
     document.getElementById("unlock-view").classList.add("hidden");
-    document.getElementById("letter-view").classList.remove("hidden");
+
+    const letterView = document.getElementById("letter-view");
+    letterView.classList.remove("hidden");
+
+    // Force-restart CSS animations so they replay after display:none is removed.
+    // Without this, iOS Safari considers the animations already "finished."
+    for (const el of letterView.querySelectorAll(
+      ".letter-ornament, .letter-body, .letter-footer",
+    )) {
+      const anim = el.style.animation;
+      el.style.animation = "none";
+      void el.offsetWidth;
+      el.style.animation = anim;
+    }
 
     const bodyEl = document.getElementById("letter-body");
     bodyEl.textContent = text;
@@ -134,6 +147,9 @@ export async function unsealLetter() {
     if (err.message === "UNSUPPORTED_COMPRESSION") {
       errorMsg.innerText =
         "This letter uses a compression method your browser doesn't support. Try Firefox or Safari.";
+    } else if (err.message === "WASM_LOAD_FAILED") {
+      errorMsg.innerText =
+        "Your browser couldn't load a required component. Please try again, or use a different browser.";
     } else {
       errorMsg.innerText =
         "The passphrase doesn't seem right. Please try again.";
